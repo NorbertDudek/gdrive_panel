@@ -14,7 +14,7 @@ function setButtonIcon(imageURL) {
     }
 };
 
-function createPinnedTab() {
+function createTab() {
     browser.tabs.create(
         {
             url: "https://drive.google.com",
@@ -24,24 +24,24 @@ function createPinnedTab() {
     )
 };
 
-function handleSearch(gmapTabs) {
+function handleSearch(gdriveTabs) {
     //console.log("currentTabId: " + currentTabId);
-    if (gmapTabs.length > 0) {
-        //console.log("there is a gmail tab");
-        gmailTabId = gmapTabs[0].id;
-        if (gmailTabId === currentTabId) {
+    if (gdriveTabs.length > 0) {
+        //console.log("there is a gdriveTabs tab");
+        gdriveTabId = gdriveTabs[0].id;
+        if (gdriveTabId === currentTabId) {
             //console.log("I'm in the gmail tab");
             browser.tabs.update(previousTab, { active: true, });
         } else {
             //console.log("I'm NOT in the gmail tab");
             previousTab = currentTabId;
-            browser.tabs.update(gmailTabId, { active: true, });
+            browser.tabs.update(gdriveTabId, { active: true, });
         }
-        setButtonIcon(gmapTabs[0].favIconUrl);
+        setButtonIcon(gdriveTabs[0].favIconUrl);
     } else {
         //console.log("there is NO gmail tab");
         previousTab = currentTabId;
-        createPinnedTab();
+        createTab();
     }
 };
 
@@ -52,16 +52,4 @@ function handleClick(tab) {
     querying.then(handleSearch, onError);
 };
 
-function update(details) {
-    if (details.reason === "install" || details.reason === "update") {
-        browser.runtime.openOptionsPage();
-    }
-};
-
 browser.browserAction.onClicked.addListener(handleClick);
-browser.runtime.onInstalled.addListener(update);
-
-browser.storage.sync.get("checkMailTime").then(function (item) {
-    var checkMailTime = item.checkMailTime || 1;
-    setCheckMailTimeOut(checkMailTime);
-});
